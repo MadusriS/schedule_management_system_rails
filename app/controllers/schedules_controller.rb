@@ -8,7 +8,7 @@ class SchedulesController < ApplicationController
     end
     
     def schedule_days(days)
-      day_names = { 1 => 'Monday', 2 => 'Tuesday', 4 => 'Wednesday', 8 => 'Thursday', 16 => 'Friday', 32 => 'Saturday', 64 => 'Sunday' }
+      day_names = { 1 => 'Sunday', 2 => 'Monday', 4 => 'Tuesday', 8 => 'Wednesday', 16 => 'Thursday', 32 => 'Friday', 64 => 'Saturday' }
       selected_days = day_names.select { |key, _value| (days & key) != 0 }.values
       selected_days.join(', ')
     end
@@ -24,6 +24,31 @@ class SchedulesController < ApplicationController
         render :new
       end
     end
+    def delete_by_criteria
+      start_time = params[:start_time]
+      task_name = params[:task_name]
+      day_name = params[:day_name]
+    
+      # Find the schedules based on start time, task name, and day
+      schedules = Schedule.where(start_time: start_time, name: task_name)
+                          .where("days & ? > 0", 2 ** Date.parse(day_name).wday)
+    
+      if schedules.any?
+        # Update and delete each matching schedule
+        schedules.each do |schedule|
+          # Update the days bitmask by clearing the bit corresponding to the day of the week
+          schedule.update(days: schedule.days & ~(2 ** Date.parse(day_name).wday))
+           #schedule.destroy
+        end
+        redirect_to schedules_path, notice: 'Schedules deleted successfully.'
+      else
+        redirect_to schedules_path, alert: 'No schedules found for the specified criteria.'
+      end
+    end
+    
+    
+    
+    
   
     def destroy
       @schedule = Schedule.find(params[:id])

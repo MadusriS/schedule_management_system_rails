@@ -1,14 +1,17 @@
 <h1>Schedules</h1>
 
 <% if @schedules.any? %>
-  <% (1..7).each do |day| %>
-    <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**(day - 1)) > 0 } %>
+  <% (0..6).each do |day| %>
+    <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**day) > 0 } %>
 
     <% unless day_schedules.empty? %>
-      <h2><%= Date::DAYNAMES[day % 7] %></h2>
+      <h2><%= Date::DAYNAMES[day] %></h2>
       <ul>
         <% day_schedules.each do |schedule| %>
-          <li><%= schedule.name %> - <%= schedule.start_time.strftime("%I:%M %p") %> - <%= schedule.end_time.strftime("%I:%M %p") %></li>
+          <li>
+            <%= "#{Date::DAYNAMES[day]}, #{schedule.name} - #{schedule.start_time.strftime("%I:%M %p")} - #{schedule.end_time.strftime("%I:%M %p")}" %>
+            <%= link_to 'Delete', delete_schedule_by_criteria_path(day_name: Date::DAYNAMES[day], start_time: schedule.start_time, task_name: schedule.name), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+          </li>
         <% end %>
       </ul>
     <% end %>
