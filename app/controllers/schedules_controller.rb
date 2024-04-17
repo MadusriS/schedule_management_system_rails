@@ -12,18 +12,26 @@ class SchedulesController < ApplicationController
       selected_days = day_names.select { |key, _value| (days & key) != 0 }.values
       selected_days.join(', ')
     end
-
-  
+    def schedule_params
+      params.require(:schedule).permit(:name, :start_time_hour, :start_time_minute, :start_time_ampm, :end_time_hour, :end_time_minute, :end_time_ampm, days: [])
+    end
+    
     def create
-      @schedule = Schedule.new(schedule_params)
-      @schedule.days = params[:schedule][:days].reject(&:blank?).map(&:to_i).sum if params[:schedule][:days]
+      @schedule = Schedule.new(schedule_params.except(:days, :start_time_hour, :start_time_minute, :start_time_ampm, :end_time_hour, :end_time_minute, :end_time_ampm))
+    
+      @schedule.days = params[:schedule][:days].reject(&:blank?).map(&:to_i).sum
+    
+      @schedule.start_time = convert_to_24_hour(params[:schedule][:start_time_hour], params[:schedule][:start_time_minute], params[:schedule][:start_time_ampm])
+      @schedule.end_time = convert_to_24_hour(params[:schedule][:end_time_hour], params[:schedule][:end_time_minute], params[:schedule][:end_time_ampm])
+    
       if @schedule.save
-        flash[:notice] = 'Schedule created successfully.'
-        redirect_to schedules_path
+        redirect_to schedules_path, notice: 'Schedule was successfully created.'
       else
         render :new
       end
     end
+    
+  
     def delete_by_criteria
       start_time = params[:start_time]
       task_name = params[:task_name]
@@ -58,8 +66,26 @@ class SchedulesController < ApplicationController
   
     private
 
-def schedule_params
-  params.require(:schedule).permit(:name, :start_time, :end_time)
-end
+  def schedule_params
+    params.require(:schedule).permit(:name, :start_time, :end_time, days: [])
   end
-  
+
+  def convert_to_24_hour(hour, minute, ampm)
+    # Convert hour and minute to integers
+    hour = hour.to_i
+    minute = minute.to_i
+
+    # Convert AM/PM to 24-hour format
+    if ampm == 'PM' && hour != 12
+      hour += 12
+    elsif ampm == 'AM' && hour == 12
+      hour = 0
+    end
+
+    # Format hour and minute with leading zeros
+    hour = hour.to_s.rjust(2, '0')
+    minute = minute.to_s.rjust(2, '0')
+
+    "#{hour}:#{minute}"
+  end
+end

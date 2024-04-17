@@ -15,12 +15,72 @@
   </div>
   <div class="form-group">
     <%= form.label :start_time %>
-    <%= form.time_field :start_time, class: 'form-control' %>
+    <select class="form-control" id="start-time-hour" name="schedule[start_time_hour]">
+      <% (1..12).each do |hour| %>
+        <option value="<%= hour %>"><%= hour %></option>
+      <% end %>
+    </select>
+    :
+    <select class="form-control" id="start-time-minute" name="schedule[start_time_minute]">
+      <% (0..59).each do |minute| %>
+        <option value="<%= minute %>"><%= format('%02d', minute) %></option>
+      <% end %>
+    </select>
+    <select class="form-control" id="start-time-ampm" name="schedule[start_time_ampm]">
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select>
   </div>
   <div class="form-group">
     <%= form.label :end_time %>
-    <%= form.time_field :end_time, class: 'form-control' %>
+    <select class="form-control" id="end-time-hour" name="schedule[end_time_hour]">
+      <% (1..12).each do |hour| %>
+        <option value="<%= hour %>"><%= hour %></option>
+      <% end %>
+    </select>
+    :
+    <select class="form-control" id="end-time-minute" name="schedule[end_time_minute]">
+      <% (0..59).each do |minute| %>
+        <option value="<%= minute %>"><%= format('%02d', minute) %></option>
+      <% end %>
+    </select>
+    <select class="form-control" id="end-time-ampm" name="schedule[end_time_ampm]">
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select>
   </div>
   <%= form.submit 'Create Schedule', class: 'btn btn-primary' %>
-
 <% end %>
+
+<script>
+  // Event listener for form submission
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.querySelector('form');
+
+    form.addEventListener('submit', function(event) {
+      var startTimeHour = document.getElementById('start-time-hour').value;
+      var startTimeMinute = document.getElementById('start-time-minute').value;
+      var startTimeAMPM = document.getElementById('start-time-ampm').value;
+      var endTimeHour = document.getElementById('end-time-hour').value;
+      var endTimeMinute = document.getElementById('end-time-minute').value;
+      var endTimeAMPM = document.getElementById('end-time-ampm').value;
+
+      // Convert start time to 24-hour format
+      if (startTimeAMPM === 'PM' && startTimeHour !== '12') {
+        startTimeHour = parseInt(startTimeHour) + 12;
+      } else if (startTimeAMPM === 'AM' && startTimeHour === '12') {
+        startTimeHour = '00';
+      }
+      // Convert end time to 24-hour format
+      if (endTimeAMPM === 'PM' && endTimeHour !== '12') {
+        endTimeHour = parseInt(endTimeHour) + 12;
+      } else if (endTimeAMPM === 'AM' && endTimeHour === '12') {
+        endTimeHour = '00';
+      }
+
+      // Update start time and end time fields with 24-hour format
+      document.getElementById('schedule_start_time').value = startTimeHour + ':' + startTimeMinute;
+      document.getElementById('schedule_end_time').value = endTimeHour + ':' + endTimeMinute;
+    });
+  });
+</script>
