@@ -1,0 +1,20 @@
+<h1>Schedules</h1>
+
+<% if @schedules.any? %>
+  <% (1..7).each do |day| %>
+    <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**(day - 1)) > 0 } %>
+
+    <% unless day_schedules.empty? %>
+      <h2><%= Date::DAYNAMES[day % 7] %></h2>
+      <ul>
+        <% day_schedules.each do |schedule| %>
+          <li><%= schedule.name %> - <%= schedule.start_time.strftime("%I:%M %p") %> - <%= schedule.end_time.strftime("%I:%M %p") %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+<% else %>
+  <p>No schedules found.</p>
+<% end %>
+
+<%= link_to 'New Schedule', new_schedule_path, class: 'btn btn-success' %>

@@ -1,0 +1,25 @@
+<h1>New Schedule</h1>
+
+<%= form_with(model: @schedule, url: schedules_path, method: :post) do |form| %>
+  <div class="form-group">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <% Date::DAYNAMES.each_with_index do |day, index| %>
+      <div>
+        <%= check_box_tag 'schedule[days][]', 2**index, @schedule.days & (2**index) > 0 %>
+        <%= label_tag "schedule_days_#{2**index}", day %>
+      </div>
+    <% end %>
+  </div>
+  <div class="form-group">
+    <%= form.label :start_time %>
+    <%= form.time_field :start_time, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= form.label :end_time %>
+    <%= form.time_field :end_time, class: 'form-control' %>
+  </div>
+  <%= form.submit 'Create Schedule', class: 'btn btn-primary' %>
+<% end %>
