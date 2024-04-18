@@ -55,30 +55,30 @@
         }
 
         .time-selector {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
 
-.time-select {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    margin-right: 10px; /* Add margin between time-select divs */
-}
+        .time-select {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
 
-.time-select:last-child {
-    margin-right: 0; /* Remove margin from the last time-select div */
-}
+        .time-select:last-child {
+            margin-right: 0;
+        }
 
-.time-select label {
-    margin-right: 10px;
-}
+        .time-select label {
+            margin-right: 10px;
+        }
 
-.time-select select {
-    flex: 1;
-    margin-right: 5px;
-}
+        .time-select select {
+            flex: 1;
+            margin-right: 5px;
+        }
 
         .btn {
             background-color: lightblue;
@@ -88,11 +88,66 @@
             padding: 10px 20px;
             cursor: pointer;
         }
+
+        /* Overlay and Popup Styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .popup {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>Add Schedule</h1>
+    <% if @schedule.errors.any? %>
+        <div class="overlay" id="overlay">
+            <div class="popup">
+                
+                <h2>Schedule Overlap Error</h2>
+                <ul>
+                <% @schedule.errors.each do |attribute, message| %>
+                    <li><%= message %></li>
+                    <% end %>
+                </ul>
+            </div>
+        </div>
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            <% if @schedule.errors.any? %>
+                document.getElementById('overlay').style.display = 'flex';
+            <% end %>
+        });
+    
+        function closePopup() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
+    
+    <% end %>
+    
     <%= form_with(model: @schedule, url: schedules_path, method: :post) do |form| %>
         <div class="form-group">
             <%= form.label :name, "Title" %>
@@ -124,6 +179,8 @@
             </div>
         </div>
         <%= form.submit 'Save', class: 'btn' %>
+       
+        <%= link_to 'Cancel', schedules_path, class: 'btn' %>
     <% end %>
 </div>
 
@@ -144,5 +201,9 @@
         });
     });
 </script>
+
+
+
+
 </body>
 </html>

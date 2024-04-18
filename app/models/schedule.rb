@@ -9,7 +9,9 @@ class Schedule < ApplicationRecord
 
   def no_time_overlaps
     if overlapping_schedules.exists?
+      #flash.now[:alert] = 'Schedule overlaps.'
       errors.add(:base, 'Schedule time overlaps with another schedule')
+      
     end
   end
 

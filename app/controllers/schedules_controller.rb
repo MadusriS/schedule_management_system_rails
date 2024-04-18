@@ -18,18 +18,22 @@ class SchedulesController < ApplicationController
     
     def create
       @schedule = Schedule.new(schedule_params.except(:days, :start_time_hour, :start_time_minute, :start_time_ampm, :end_time_hour, :end_time_minute, :end_time_ampm))
-    
+      
       @schedule.days = params[:schedule][:days].reject(&:blank?).map(&:to_i).sum
-    
+      
       @schedule.start_time = convert_to_24_hour(params[:schedule][:start_time_hour], params[:schedule][:start_time_minute], params[:schedule][:start_time_ampm])
       @schedule.end_time = convert_to_24_hour(params[:schedule][:end_time_hour], params[:schedule][:end_time_minute], params[:schedule][:end_time_ampm])
-    
-      if @schedule.save
-        redirect_to schedules_path, notice: 'Schedule was successfully created.'
-      else
-        render :new
+      
+      respond_to do |format|
+        if @schedule.save
+          format.html { redirect_to schedules_path, notice: 'Schedule was successfully created.' }
+        else
+          format.json { render json: @schedule.errors, status: :unprocessable_entity }
+        end
       end
     end
+    
+    
     
   
     def delete_by_criteria
