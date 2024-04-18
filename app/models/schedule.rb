@@ -18,7 +18,7 @@ class Schedule < ApplicationRecord
             .where('days & ? != 0', days)
             .where('((start_time <= ? AND end_time > ?) OR 
                      (start_time < ? AND end_time >= ?) OR 
-                     (start_time >= ? AND end_time <= ?))',
+                     (start_time >= ? AND end_time <=?))',
                    end_time, start_time,
                    end_time, start_time,
                    start_time, end_time)

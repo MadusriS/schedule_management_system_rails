@@ -1,86 +1,148 @@
-<h1>New Schedule</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
 
-<%= form_with(model: @schedule, url: schedules_path, method: :post) do |form| %>
-  <div class="form-group">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: 'form-control' %>
-  </div>
-  <div class="form-group">
-    <% Date::DAYNAMES.each_with_index do |day, index| %>
-      <div>
-        <%= check_box_tag 'schedule[days][]', 2**index, @schedule.days & (2**index) > 0 %>
-        <%= label_tag "schedule_days_#{2**index}", day %>
-      </div>
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 50px;
+            border: 1px solid #ccc;
+        }
+
+        .day-checkbox {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .styled-checkbox {
+            display: none;
+        }
+
+        .day-checkbox-label {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 2px solid lightblue;
+            cursor: pointer;
+        }
+
+        .styled-checkbox:checked + .day-checkbox-label {
+            background-color: darkblue;
+            color: white;
+            border-color: darkblue;
+        }
+
+        .time-selector {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.time-select {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin-right: 10px; /* Add margin between time-select divs */
+}
+
+.time-select:last-child {
+    margin-right: 0; /* Remove margin from the last time-select div */
+}
+
+.time-select label {
+    margin-right: 10px;
+}
+
+.time-select select {
+    flex: 1;
+    margin-right: 5px;
+}
+
+        .btn {
+            background-color: lightblue;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Add Schedule</h1>
+    <%= form_with(model: @schedule, url: schedules_path, method: :post) do |form| %>
+        <div class="form-group">
+            <%= form.label :name, "Title" %>
+            <%= form.text_field :name, class: 'form-control' %>
+        </div>
+        <div class="form-group">
+            <label>Active Days</label>
+            <div>
+                <% Date::ABBR_DAYNAMES.each_with_index do |day, index| %>
+                    <div class="day-checkbox">
+                        <%= check_box_tag 'schedule[days][]', 2**index, @schedule.days & (2**index) > 0, id: "schedule_days_#{2**index}", class: "styled-checkbox" %>
+                        <%= label_tag "schedule_days_#{2**index}", day, class: "day-checkbox-label" %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+        <div class="form-group time-selector">
+            <div class="time-select">
+                <%= form.label :start_time, 'Start Time' %>
+                <%= select_tag 'schedule[start_time_hour]', options_for_select(1..12), class: 'form-control' %>
+                <%= select_tag 'schedule[start_time_minute]', options_for_select(0..59), class: 'form-control' %>
+                <%= select_tag 'schedule[start_time_ampm]', options_for_select(['AM', 'PM']), class: 'form-control' %>
+            </div>
+            <div class="time-select">
+                <%= form.label :end_time, 'End Time' %>
+                <%= select_tag 'schedule[end_time_hour]', options_for_select(1..12), class: 'form-control' %>
+                <%= select_tag 'schedule[end_time_minute]', options_for_select(0..59), class: 'form-control' %>
+                <%= select_tag 'schedule[end_time_ampm]', options_for_select(['AM', 'PM']), class: 'form-control' %>
+            </div>
+        </div>
+        <%= form.submit 'Save', class: 'btn' %>
     <% end %>
-  </div>
-  <div class="form-group">
-    <%= form.label :start_time %>
-    <select class="form-control" id="start-time-hour" name="schedule[start_time_hour]">
-      <% (1..12).each do |hour| %>
-        <option value="<%= hour %>"><%= hour %></option>
-      <% end %>
-    </select>
-    :
-    <select class="form-control" id="start-time-minute" name="schedule[start_time_minute]">
-      <% (0..59).each do |minute| %>
-        <option value="<%= minute %>"><%= format('%02d', minute) %></option>
-      <% end %>
-    </select>
-    <select class="form-control" id="start-time-ampm" name="schedule[start_time_ampm]">
-      <option value="AM">AM</option>
-      <option value="PM">PM</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <%= form.label :end_time %>
-    <select class="form-control" id="end-time-hour" name="schedule[end_time_hour]">
-      <% (1..12).each do |hour| %>
-        <option value="<%= hour %>"><%= hour %></option>
-      <% end %>
-    </select>
-    :
-    <select class="form-control" id="end-time-minute" name="schedule[end_time_minute]">
-      <% (0..59).each do |minute| %>
-        <option value="<%= minute %>"><%= format('%02d', minute) %></option>
-      <% end %>
-    </select>
-    <select class="form-control" id="end-time-ampm" name="schedule[end_time_ampm]">
-      <option value="AM">AM</option>
-      <option value="PM">PM</option>
-    </select>
-  </div>
-  <%= form.submit 'Create Schedule', class: 'btn btn-primary' %>
-<% end %>
+</div>
 
 <script>
-  // Event listener for form submission
-  document.addEventListener('DOMContentLoaded', function() {
-    var form = document.querySelector('form');
-
-    form.addEventListener('submit', function(event) {
-      var startTimeHour = document.getElementById('start-time-hour').value;
-      var startTimeMinute = document.getElementById('start-time-minute').value;
-      var startTimeAMPM = document.getElementById('start-time-ampm').value;
-      var endTimeHour = document.getElementById('end-time-hour').value;
-      var endTimeMinute = document.getElementById('end-time-minute').value;
-      var endTimeAMPM = document.getElementById('end-time-ampm').value;
-
-      // Convert start time to 24-hour format
-      if (startTimeAMPM === 'PM' && startTimeHour !== '12') {
-        startTimeHour = parseInt(startTimeHour) + 12;
-      } else if (startTimeAMPM === 'AM' && startTimeHour === '12') {
-        startTimeHour = '00';
-      }
-      // Convert end time to 24-hour format
-      if (endTimeAMPM === 'PM' && endTimeHour !== '12') {
-        endTimeHour = parseInt(endTimeHour) + 12;
-      } else if (endTimeAMPM === 'AM' && endTimeHour === '12') {
-        endTimeHour = '00';
-      }
-
-      // Update start time and end time fields with 24-hour format
-      document.getElementById('schedule_start_time').value = startTimeHour + ':' + startTimeMinute;
-      document.getElementById('schedule_end_time').value = endTimeHour + ':' + endTimeMinute;
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.styled-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                if (this.checked) {
+                    label.style.backgroundColor = 'darkblue';
+                    label.style.color = 'white';
+                } else {
+                    label.style.backgroundColor = '';
+                    label.style.color = '';
+                }
+            });
+        });
     });
-  });
 </script>
+</body>
+</html>

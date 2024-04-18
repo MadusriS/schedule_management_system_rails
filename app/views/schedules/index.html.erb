@@ -1,119 +1,154 @@
-<h1>Schedules</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedules</title>
 
-<% if @schedules.any? %>
-  <div class="days-container">
-    <% (0..6).each do |day| %>
-      <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**day) > 0 } %>
+  <style>
+    .days-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
 
-      <div class="day-box">
-        <button class="day-button" data-day="<%= Date::ABBR_DAYNAMES[day] %>">
-          <%= Date::ABBR_DAYNAMES[day] %>
-        </button>
-      </div>
-    <% end %>
-  </div>
+    .day-box {
+      padding: 5px;
+      border: 2px solid #87CEFA; /* Blue border */
+      border-radius: 20px; /* Stadium shape */
+      width: 80px; /* Adjust width as needed */
+      height: 50px; /* Adjust height as needed */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: white; /* White color inside */
+      margin-right: 10px;
+    }
 
-  <div class="schedule-container">
-    <% (0..6).each do |day| %>
-      <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**day) > 0 } %>
-      <% unless day_schedules.empty? %>
-        <div class="day-schedule" id="<%= Date::ABBR_DAYNAMES[day].downcase %>-schedule" style="display: none;">
-          <h2><%= Date::ABBR_DAYNAMES[day] %></h2>
-          <ul>
-            <% day_schedules.each do |schedule| %>
-              <li class="schedule-item">
-                <span class="schedule-time"><%= schedule.start_time.strftime("%I:%M %p") %> - <%= schedule.end_time.strftime("%I:%M %p") %></span>
-                <span class="schedule-task"><%= schedule.name %></span>
-                <span class="delete-button">
-                  <%= link_to 'Delete', delete_schedule_by_criteria_path(day_name: Date::ABBR_DAYNAMES[day], start_time: schedule.start_time, task_name: schedule.name), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
-                </span>
-              </li>
-            <% end %>
-          </ul>
+    .day-button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .day-button.active {
+      background-color: #007bff; /* Dark blue background when active */
+      color: white; /* White text color */
+    }
+
+    .schedule-container {
+      text-align: center;
+    }
+
+    .day-schedule {
+      margin-top: 20px;
+    }
+
+    .schedule-item {
+      margin-bottom: 5px;
+      list-style-type: none;
+      font-weight: bold;
+    }
+
+    .schedule-time {
+      margin-right: 10px;
+    }
+
+    .delete-button {
+      padding: 5px;
+    }
+
+    .new-schedule-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .new-schedule-capsule {
+      background-color: #87CEFA; /* Light blue background */
+      padding: 10px 20px;
+      border-radius: 20px; /* Rounded corners */
+    }
+
+    .add-schedule-button {
+      color: white; /* White text color */
+      font-weight: bold;
+      text-decoration: none; /* Remove underline */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Schedules</h1>
+
+  <% if @schedules.any? %>
+    <div class="days-container">
+      <% (0..6).each do |day| %>
+        <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**day) > 0 } %>
+
+        <div class="day-box">
+          <button class="day-button" data-day="<%= Date::ABBR_DAYNAMES[day] %>">
+            <%= Date::ABBR_DAYNAMES[day] %>
+          </button>
         </div>
       <% end %>
-    <% end %>
+    </div>
+
+    <div class="schedule-container">
+      <% (0..6).each do |day| %>
+        <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**day) > 0 } %>
+        <% unless day_schedules.empty? %>
+          <div class="day-schedule" id="<%= Date::ABBR_DAYNAMES[day].downcase %>-schedule" style="display: none;">
+            <h2><%= Date::ABBR_DAYNAMES[day] %></h2>
+            <ul>
+              <% day_schedules.sort_by(&:start_time).each do |schedule| %>
+                <li class="schedule-item">
+                  <span class="schedule-time"><%= schedule.start_time.strftime("%I:%M %p") %> - <%= schedule.end_time.strftime("%I:%M %p") %></span>
+                  <span class="schedule-task"><%= schedule.name %></span>
+                  <span class="delete-button">
+                    <%= link_to 'Delete', delete_schedule_by_criteria_path(day_name: Date::ABBR_DAYNAMES[day], start_time: schedule.start_time, task_name: schedule.name), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+                  </span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No schedules found.</p>
+  <% end %>
+
+  <div class="new-schedule-container">
+    <div class="new-schedule-capsule">
+      <%= link_to 'Add Schedule', new_schedule_path, class: 'add-schedule-button' %>
+    </div>
   </div>
-<% else %>
-  <p>No schedules found.</p>
-<% end %>
 
-<div class="new-schedule-button">
-  <%= link_to 'New Schedule', new_schedule_path, class: 'btn btn-success' %>
-</div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const dayButtons = document.querySelectorAll(".day-button");
+      dayButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+          const day = this.dataset.day;
+          const scheduleContainer = document.getElementById(`${day.toLowerCase()}-schedule`);
+          const allScheduleContainers = document.querySelectorAll(".day-schedule");
+          allScheduleContainers.forEach(function(container) {
+            container.style.display = "none";
+          });
+          scheduleContainer.style.display = "block";
 
-<style>
-  .days-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
+          // Remove active class from all day buttons
+          dayButtons.forEach(function(btn) {
+            btn.classList.remove("active");
+          });
 
-  .day-box {
-    padding: 5px;
-    border: 2px solid #87CEFA; /* Blue border */
-    border-radius: 20px; /* Stadium shape */
-    width: 80px; /* Adjust width as needed */
-    height: 50px; /* Adjust height as needed */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: white; /* White color inside */
-    margin-right: 10px;
-  }
-
-  .day-button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  .schedule-container {
-    text-align: center;
-  }
-
-  .day-schedule {
-    margin-top: 20px;
-  }
-
-  .schedule-item {
-    margin-bottom: 5px;
-    list-style-type: none;
-    font-weight: bold;
-  }
-
-  .schedule-time {
-    margin-right: 10px;
-  }
-
-  .delete-button {
-    padding: 5px;
-    background-color: #f8d7da; /* Red background color for delete button */
-    border: 1px solid #f5c6cb; /* Red border color for delete button */
-    border-radius: 3px;
-  }
-
-  .new-schedule-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-  }
-</style>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const dayButtons = document.querySelectorAll(".day-button");
-    dayButtons.forEach(function(button) {
-      button.addEventListener("click", function() {
-        const day = this.dataset.day;
-        const scheduleContainer = document.getElementById(`${day.toLowerCase()}-schedule`);
-        const allScheduleContainers = document.querySelectorAll(".day-schedule");
-        allScheduleContainers.forEach(function(container) {
-          container.style.display = "none";
+          // Add active class to clicked day button
+          this.classList.add("active");
         });
-        scheduleContainer.style.display = "block";
       });
     });
-  });
-</script>
+  </script>
+</body>
+</html>
