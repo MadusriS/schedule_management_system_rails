@@ -27,11 +27,14 @@ class SchedulesController < ApplicationController
       respond_to do |format|
         if @schedule.save
           format.html { redirect_to schedules_path, notice: 'Schedule was successfully created.' }
+          format.js   # Render create.js.erb for AJAX response
         else
           format.json { render json: @schedule.errors, status: :unprocessable_entity }
+          format.js { render :new }  # Render new.js.erb with errors for AJAX response
         end
       end
     end
+    
     
     
     

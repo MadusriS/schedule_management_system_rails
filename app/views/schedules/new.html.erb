@@ -148,7 +148,7 @@
     
     <% end %>
     
-    <%= form_with(model: @schedule, url: schedules_path, method: :post) do |form| %>
+    <%= form_with(model: @schedule,remote: true, url: schedules_path, method: :post) do |form| %>
         <div class="form-group">
             <%= form.label :name, "Title" %>
             <%= form.text_field :name, class: 'form-control' %>
@@ -183,24 +183,31 @@
         <%= link_to 'Cancel', schedules_path, class: 'btn' %>
     <% end %>
 </div>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkboxes = document.querySelectorAll('.styled-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const label = this.nextElementSibling;
-                if (this.checked) {
-                    label.style.backgroundColor = 'darkblue';
-                    label.style.color = 'white';
-                } else {
-                    label.style.backgroundColor = '';
-                    label.style.color = '';
-                }
-            });
-        });
+  document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.styled-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (this.checked) {
+          label.style.backgroundColor = 'darkblue';
+          label.style.color = 'white';
+        } else {
+          label.style.backgroundColor = '';
+          label.style.color = '';
+        }
+      });
     });
+  });
+
+  // Show overlay and popup if there are errors after form submission
+  <% if @schedule.errors.any? %>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('overlay').style.display = 'flex';
+    });
+  <% end %>
 </script>
+
 
 
 
