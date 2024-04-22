@@ -13,15 +13,25 @@
   <%= javascript_importmap_tags %>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const notices = document.querySelectorAll('.alert');
-      notices.forEach(notice => {
+  document.addEventListener('DOMContentLoaded', () => {
+    const notices = document.querySelectorAll('.alert');
+    notices.forEach(notice => {
+      // Check if the flash message is for successful schedule creation
+      if (notice.innerText.includes('Schedule successfully created')) {
+        // Show the message for a longer duration
         setTimeout(() => {
           notice.style.display = 'none';
-        }, 5000); // Hide after 5 seconds (5000 milliseconds)
-      });
+        }, 5000); // Hide after 10 seconds for successful schedule creation
+      } else {
+        // Hide other flash messages after 5 seconds
+        setTimeout(() => {
+          notice.style.display = 'none';
+        }, 5000); // Hide after 5 seconds for other flash messages
+      }
     });
-  </script>
+  });
+</script>
+
 </head>
 
 <body>

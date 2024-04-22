@@ -1,7 +1,17 @@
-// Close any modals or overlays
-$("#overlay").hide();
-$("#modal").hide();
+// create.js.erb
 
-// Optionally, you can update the schedule list or display a success message
-// Example:
-// $("#schedule-list").append("<%= j render(partial: 'schedule', locals: { schedule: @schedule }) %>");
+console.log("create.js.erb is being executed");
+
+<% if @schedule.save %>
+  // Redirect if needed
+  window.location.href = "<%= schedules_path %>";
+
+  // Display success message for a specific duration
+  setTimeout(function() {
+    document.querySelector('.alert').style.display = 'none';
+  }, 5000); // Hide after 5 seconds
+<% else %>
+  // Handle other cases if needed
+<% end %>
+
+
