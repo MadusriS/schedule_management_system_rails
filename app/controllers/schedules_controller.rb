@@ -1,4 +1,5 @@
 class SchedulesController < ApplicationController
+  before_action :require_login
     def index
       @schedules = Schedule.all
     end
@@ -46,22 +47,36 @@ class SchedulesController < ApplicationController
       task_name = params[:task_name]
       day_name = params[:day_name]
     
-      # Find the schedules based on start time, task name, and day
-      schedules = Schedule.where(start_time: start_time, name: task_name)
-                          .where("days & ? > 0", 2 ** Date.parse(day_name).wday)
+      # Initialize @schedules to ensure it's always set for the view
+      @schedules = Schedule.all
     
-      if schedules.any?
-        # Update and delete each matching schedule
+      if start_time.blank? || task_name.blank? || day_name.blank?
+        flash.now[:alert] = 'Missing parameters: start time, task name, or day name is missing.'
+        render :index
+        return
+      end
+    
+      begin
+        # Find the schedules based on start time, task name, and day
+        schedules = Schedule.where(start_time: start_time, name: task_name)
+                            .where("days & ? > 0", 2 ** Date.parse(day_name).wday)
+    
+        # Update the days bitmask by clearing the bit corresponding to the day of the week
         schedules.each do |schedule|
-          # Update the days bitmask by clearing the bit corresponding to the day of the week
           schedule.update(days: schedule.days & ~(2 ** Date.parse(day_name).wday))
-           #schedule.destroy
         end
-        redirect_to schedules_path, notice: 'Schedules deleted successfully.'
-      else
-        redirect_to schedules_path, alert: 'No schedules found for the specified criteria.'
+    
+        flash.now[:notice] = 'Schedules updated successfully.'
+      rescue ArgumentError
+        flash.now[:alert] = 'Invalid date format.'
+      ensure
+        # Update @schedules again to reflect any changes made
+        @schedules = Schedule.all
+        render :index
       end
     end
+    
+    
     
     
     
@@ -74,6 +89,13 @@ class SchedulesController < ApplicationController
     end
   
     private
+
+    def require_login
+      unless current_user
+        flash[:error] = "You must be logged in to access this section"
+        redirect_to new_session_path # adjust path as needed
+      end
+    end
 
   def schedule_params
     params.require(:schedule).permit(:name, :start_time, :end_time, days: [])

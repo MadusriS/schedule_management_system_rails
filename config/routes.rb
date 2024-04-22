@@ -1,9 +1,21 @@
 Rails.application.routes.draw do
-  resources :schedules, only: [:index, :new, :create]
-  get '/schedules/delete_by_criteria', to: 'schedules#delete_by_criteria', as: 'delete_schedule_by_criteria'
+  # Route for showing the login form
+  get 'login', to: 'sessions#new', as: 'login'
+  # Route for posting the login form
+  post 'login', to: 'sessions#create'
+  # Route for logging out
+  delete 'logout', to: 'sessions#destroy', as: 'logout'
 
-  root to: 'schedules#index'
+  resources :users, only: [:new, :create]
+  resources :sessions, only: [:new, :create]
+  
+  resources :schedules, only: [:index, :new, :create]
+  # Correctly define the route for deleting schedules by criteria
+  delete 'schedules/delete_by_criteria', to: 'schedules#delete_by_criteria', as: 'delete_schedule_by_criteria'
+
+  root to: 'sessions#new'
 end
+
 
 
 

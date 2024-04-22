@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <!-- Include your CSS stylesheets here -->
+  <link rel="stylesheet" >
+  <style>
+    /* Custom CSS styles */
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .left-image-container {
+      margin-right: 200px;
+      margin-left: 20px;
+
+    }
+
+    .left-image {
+      width: 200px;
+      height: auto;
+    }
+
+    .login-form {
+      width: 300px;
+    }
+
+    .login-button {
+      background-color: lightblue;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .login-image {
+      width: 200px;
+      height: auto;
+      
+    }
+
+    .top-image {
+        width: 20%;
+        height: auto;
+        display: block;
+        margin: 0 auto; /* Center the image horizontally */
+      }
+  </style>
+</head>
+<body>
+
+<!-- Top image -->
+<div>
+  <img src="https://i.pcmag.com/imagery/reviews/07MJqoGL3dKLVxhWIJqfhZm-28.fit_lim.size_1050x591.v1664811718.jpg" alt="Top Image" class="top-image">
+</div>
+
+<div class="container">
+  <!-- Left image -->
+  <div class="left-image-container">
+    <img src="https://webs.prgr.in/packs/media/images/illustartion-up-to-date-1a3adcb423a33eabed3b4d6e71d90451.svg" alt="Left Image" class="left-image">
+  </div>
+
+  <!-- Login form -->
+  <div class="login-form">
+    <h1>Login</h1>
+    <%= form_for :session, url: login_path do |f| %>
+      <div class="form-group">
+        <%= f.label :email %>
+        <%= f.text_field :email, class: "form-control", placeholder: "Enter your email" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password %>
+        <%= f.password_field :password, class: "form-control", placeholder: "Enter your password" %>
+      </div>
+
+      <%= f.submit "Continue", class: "login-button" %>
+    <% end %>
+
+    
+    <% if flash[:danger] %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= flash[:danger] %>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+</body>
+</html>

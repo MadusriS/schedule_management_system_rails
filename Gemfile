@@ -2,6 +2,9 @@ source "https://rubygems.org"
 
 ruby "3.1.2"
 
+gem 'bcrypt', '~> 3.1.7'
+
+
 gem "turbolinks", "~> 5.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
