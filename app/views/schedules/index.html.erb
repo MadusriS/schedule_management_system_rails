@@ -81,84 +81,83 @@
 </head>
 <body>
 
-  <h1>Schedules</h1>
+<h1>Schedules</h1>
 
-  <% if @schedules.any? %>
-    <div class="days-container">
-      <% (0..6).each do |day| %>
-        <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**day) > 0 } %>
+<% if @schedules.any? %>
+  <div class="days-container">
+    <% (0..6).each do |day| %>
+      <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**day) > 0 } %>
 
-        <div class="day-box">
-          <button class="day-button" data-day="<%= Date::ABBR_DAYNAMES[day] %>">
-            <%= Date::ABBR_DAYNAMES[day] %>
-          </button>
+      <div class="day-box">
+        <button class="day-button" data-day="<%= Date::ABBR_DAYNAMES[day] %>">
+          <%= Date::ABBR_DAYNAMES[day] %>
+        </button>
+      </div>
+    <% end %>
+  </div> <!-- Add this line to close the days-container div -->
+
+  <div class="schedule-container">
+    <% (0..6).each do |day| %>
+      <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**day) > 0 } %>
+      <% unless day_schedules.empty? %>
+        <div class="day-schedule" id="<%= Date::ABBR_DAYNAMES[day].downcase %>-schedule" style="display: none;">
+          <h2><%= Date::ABBR_DAYNAMES[day] %></h2>
+          <ul>
+            <% day_schedules.sort_by(&:start_time).each do |schedule| %>
+              <li class="schedule-item">
+                <span class="schedule-time"><%= schedule.start_time.strftime("%I:%M %p") %> - <%= schedule.end_time.strftime("%I:%M %p") %></span>
+                <span class="schedule-task"><%= schedule.name %></span>
+                <span class="delete-button">
+                  <%= link_to 'Delete', delete_schedule_by_criteria_path(day_name: Date::ABBR_DAYNAMES[day], start_time: schedule.start_time, task_name: schedule.name), method: :delete, remote: true, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+                </span>
+              </li>
+            <% end %>
+          </ul>
         </div>
       <% end %>
-    </div>
-
-    <div class="schedule-container">
-      <% (0..6).each do |day| %>
-        <% day_schedules = @schedules.select { |schedule| (schedule.days || 0) & (2**day) > 0 } %>
-        <% unless day_schedules.empty? %>
-          <div class="day-schedule" id="<%= Date::ABBR_DAYNAMES[day].downcase %>-schedule" style="display: none;">
-            <h2><%= Date::ABBR_DAYNAMES[day] %></h2>
-            <ul>
-              <% day_schedules.sort_by(&:start_time).each do |schedule| %>
-                <li class="schedule-item">
-                  <span class="schedule-time"><%= schedule.start_time.strftime("%I:%M %p") %> - <%= schedule.end_time.strftime("%I:%M %p") %></span>
-                  <span class="schedule-task"><%= schedule.name %></span>
-                  <span class="delete-button">
-                  <%= link_to 'Delete', delete_schedule_by_criteria_path(day_name: Date::ABBR_DAYNAMES[day], start_time: schedule.start_time, task_name: schedule.name), method: :delete, remote: true, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
-
-                  </span>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
-      <% end %>
-    </div>
-  <% else %>
-    <p>No schedules found.</p>
-  <% end %>
-
-  <div class="new-schedule-container">
-    <div class="new-schedule-capsule">
-      <%= link_to 'Add Schedule', new_schedule_path, class: 'add-schedule-button' %>
-    </div>
+    <% end %>
   </div>
+<% else %>
+  <p>No schedules found.</p>
+<% end %>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const dayButtons = document.querySelectorAll(".day-button");
-      dayButtons.forEach(function(button) {
-        button.addEventListener("click", function() {
-          const day = this.dataset.day;
-          const scheduleContainer = document.getElementById(`${day.toLowerCase()}-schedule`);
-          const allScheduleContainers = document.querySelectorAll(".day-schedule");
-          allScheduleContainers.forEach(function(container) {
-            container.style.display = "none";
-          });
-          scheduleContainer.style.display = "block";
+<div class="new-schedule-container">
+  <div class="new-schedule-capsule">
+    <%= link_to 'Add Schedule', new_schedule_path, class: 'add-schedule-button' %>
+  </div>
+</div>
 
-          // Remove active class from all day buttons
-          dayButtons.forEach(function(btn) {
-            btn.classList.remove("active");
-          });
-
-          // Add active class to clicked day button
-          this.classList.add("active");
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const dayButtons = document.querySelectorAll(".day-button");
+    dayButtons.forEach(function(button) {
+      button.addEventListener("click", function() {
+        const day = this.dataset.day;
+        const scheduleContainer = document.getElementById(`${day.toLowerCase()}-schedule`);
+        const allScheduleContainers = document.querySelectorAll(".day-schedule");
+        allScheduleContainers.forEach(function(container) {
+          container.style.display = "none";
         });
+        scheduleContainer.style.display = "block";
+
+        // Remove active class from all day buttons
+        dayButtons.forEach(function(btn) {
+          btn.classList.remove("active");
+        });
+
+        // Add active class to clicked day button
+        this.classList.add("active");
       });
     });
-    document.addEventListener("ajax:success", function(event) {
-  const xhr = event.detail[0];
-  const scheduleItem = xhr.closest(".schedule-item");
-  if (scheduleItem) {
-    scheduleItem.remove();
-  }
-});
+  });
+  document.addEventListener("ajax:success", function(event) {
+    const xhr = event.detail[0];
+    const scheduleItem = xhr.closest(".schedule-item");
+    if (scheduleItem) {
+      scheduleItem.remove();
+    }
+  });
+</script>
 
-  </script>
 </body>
 </html>

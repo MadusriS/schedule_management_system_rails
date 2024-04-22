@@ -122,23 +122,17 @@
 <body>
 <div class="container">
     <h1>Add Schedule</h1>
+    <!-- Overlay and Popup for Form Validation Errors -->
     <% if @schedule.errors.any? %>
-        <div class="overlay" id="overlay">
-            <div class="popup">
-                
-                <h2>Schedule Overlap Error</h2>
-                <ul>
-                <% @schedule.errors.each do |attribute, message| %>
-                    <li><%= message %></li>
-                    <% end %>
-                </ul>
-            </div>
+    <div class="overlay" id="overlay">
+        <div class="popup">
+            <h2><%= @schedule.errors.full_messages.join(', ') %></h2>
+            <button class="close-btn" onclick="closePopup()">Close</button>
         </div>
+    </div>
         <script>
         document.addEventListener("DOMContentLoaded", function() {
-            <% if @schedule.errors.any? %>
-                document.getElementById('overlay').style.display = 'flex';
-            <% end %>
+            document.getElementById('overlay').style.display = 'flex';
         });
     
         function closePopup() {
@@ -184,33 +178,12 @@
     <% end %>
 </div>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const checkboxes = document.querySelectorAll('.styled-checkbox');
-    checkboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', function() {
-        const label = this.nextElementSibling;
-        if (this.checked) {
-          label.style.backgroundColor = 'darkblue';
-          label.style.color = 'white';
-        } else {
-          label.style.backgroundColor = '';
-          label.style.color = '';
-        }
-      });
-    });
-  });
-
   // Show overlay and popup if there are errors after form submission
-  <% if @schedule.errors.any? %>
-    document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    <% if @schedule.errors.any? %>
       document.getElementById('overlay').style.display = 'flex';
-    });
-  <% end %>
+    <% end %>
+  });
 </script>
-
-
-
-
-
 </body>
 </html>
