@@ -6,7 +6,7 @@
   <%= csp_meta_tag %>
 
   <!-- Include your CSS stylesheets here -->
-  <link rel="stylesheet" >
+  
   <style>
     /* Custom CSS styles */
     body, html {
@@ -97,8 +97,28 @@
         </button>
       </div>
     <% end %>
-  </div>
+    <% if flash[:success] %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= flash[:success] %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  <% end %>
 </div>
+</div>
+
+<!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Your JavaScript code -->
+<script>
+$(document).ready(function() {
+  setTimeout(function() {
+    $(".alert").alert('close'); // Close the alert message
+  }, 5000); // Hide after 5 seconds
+});
+</script>
 
 </body>
 </html>

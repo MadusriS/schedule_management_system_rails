@@ -11,6 +11,9 @@
       justify-content: space-between;
       margin-bottom: 20px;
     }
+    .button-group {
+  display: flex;
+}
 
     .day-box {
       padding: 5px; /* Corrected from incorrect comment syntax */
@@ -61,7 +64,7 @@
 
     .new-schedule-container {
       position: absolute;
-      top: 20px;
+      top: 15px;
       right: 20px;
     }
 
@@ -70,12 +73,24 @@
       padding: 10px 20px;
       border-radius: 20px;
     }
+    .add-schedule-section {
+  margin-right: 10px; /* Adjust margin as needed */
+}
 
-    .add-schedule-button {
-      color: white;
-      font-weight: bold;
-      text-decoration: none;
-    }
+.add-schedule-button, .logout-button {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+
+.add-schedule-button {
+  background-color: #87CEFA;
+}
+.logout-button {
+  background-color: #87CEFA;
+}
   </style>
 </head>
 <body>
@@ -123,7 +138,14 @@
 
 <div class="new-schedule-container">
   <div class="new-schedule-capsule">
-    <%= link_to 'Add Schedule', new_schedule_path, class: 'add-schedule-button', data: { turbo_frame: '_top' } %>
+    <div class="button-group">
+      <div class="add-schedule-section">
+        <%= link_to 'Add Schedule', new_schedule_path, class: 'add-schedule-button', data: { turbo_frame: '_top' } %>
+      </div>
+      <div class="logout-section">
+        <%= link_to 'Logout', new_session_path, method: :delete, class: 'logout-button', data: { turbo_frame: '_top' } %>
+      </div>
+    </div>
   </div>
 </div>
 
