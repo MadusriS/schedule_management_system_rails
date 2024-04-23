@@ -1,7 +1,8 @@
 class Schedule < ApplicationRecord
-  validates :name, presence: true
-  validates :start_time, presence: true
-  validates :end_time, presence: true
+  validates :name, presence: { message: "can't be blank" }
+  validates :start_time, presence: { message: "can't be blank" }
+  validates :end_time, presence: { message: "can't be blank" }
+  validates :days, presence: { message: "can't be blank" }
 
   validate :no_time_overlaps
 

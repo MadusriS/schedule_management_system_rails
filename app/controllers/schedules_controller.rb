@@ -36,12 +36,9 @@ class SchedulesController < ApplicationController
           #format.js { render :new }  # Render new.js.erb with errors for AJAX response
         end
       end
-    end
-    
-    
-    
- 
-  
+    end  
+      
+   
     def delete_by_criteria
       start_time = params[:start_time]
       task_name = params[:task_name]
