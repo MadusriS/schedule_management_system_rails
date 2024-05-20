@@ -69,6 +69,10 @@ class Schedule < ApplicationRecord
     time_string = "#{hour}:#{minute}"
 
     # Convert to 24-hour format if meridian is PM
+
+    if meridian == 'AM' 
+      time_string = (hour.to_i + 0).to_s + ":#{minute}"
+    end
     if meridian == 'PM' && hour != '12'
       time_string = (hour.to_i + 12).to_s + ":#{minute}"
     end

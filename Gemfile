@@ -4,7 +4,7 @@ ruby "3.1.2"
 
 gem 'bcrypt', '~> 3.1.7'
 
-
+#for pageloading 
 gem "turbolinks", "~> 5.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"

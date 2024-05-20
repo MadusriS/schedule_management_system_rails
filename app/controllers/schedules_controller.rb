@@ -1,5 +1,5 @@
 class SchedulesController < ApplicationController
-  before_action :require_login
+  before_action :require_login, only: [:index, :new]
     def index
       @schedules = Schedule.all
     end
